@@ -1,21 +1,21 @@
 # RSA Side-Channel Educational Lab
 
-A from-scratch RSA implementation used to **simulate side-channel attacks and measure the effectiveness of standard countermeasures** — timing analysis, simple power analysis (SPA), constant-time exponentiation, the Montgomery ladder, and RSA blinding.
+A from-scratch RSA implementation used to **simulate side-channel attacks and measure the effectiveness of standard countermeasures**: timing analysis, simple power analysis (SPA), constant-time exponentiation, the Montgomery ladder, and RSA blinding.
 
 This is not a cryptography library. It is a lab for demonstrating *why* naive modular exponentiation leaks the private exponent, and how real-world libraries (OpenSSL, BoringSSL, etc.) defend against it.
 
 ## What it demonstrates
 
-**The vulnerability** — `modexp_vuln` is a textbook square-and-multiply implementation: it only executes the multiply step when the current exponent bit is `1`. That data-dependent branch is exactly what timing and power side-channels exploit.
+**The vulnerability**: `modexp_vuln` is a textbook square-and-multiply implementation: it only executes the multiply step when the current exponent bit is `1`. That data-dependent branch is exactly what timing and power side-channels exploit.
 
 **Two independent attack simulations:**
-- **Timing analysis** (`timing_simulator.py`) — measures wall-clock execution time over many samples to show the vulnerable implementation's timing correlates with the secret exponent, while the hardened implementation does not.
-- **Simple power analysis** (`power_simulator.py`) — simulates power traces using a Hamming-weight leakage model with Gaussian noise, the standard technique for modeling SPA/DPA without physical hardware.
+- **Timing analysis** (`timing_simulator.py`): measures wall-clock execution time over many samples to show the vulnerable implementation's timing correlates with the secret exponent, while the hardened implementation does not.
+- **Simple power analysis** (`power_simulator.py`): simulates power traces using a Hamming-weight leakage model with Gaussian noise, the standard technique for modeling SPA/DPA without physical hardware.
 
 **Three countermeasures, implemented and benchmarked against the attacks:**
-- `modexp_always` — constant-time exponentiation using arithmetic masking (both branches are always computed; the result is selected algebraically instead of with an `if`).
-- `modexp_ladder` — the Montgomery ladder, which performs the same operations in the same order regardless of the exponent bit.
-- `blinding.py` — message blinding (`m -> m·r^e mod n`) and exponent blinding (`d -> d + k·φ(n)`), the technique OpenSSL uses by default to defeat timing attacks.
+- `modexp_always`: constant-time exponentiation using arithmetic masking (both branches are always computed; the result is selected algebraically instead of with an `if`).
+- `modexp_ladder`: the Montgomery ladder, which performs the same operations in the same order regardless of the exponent bit.
+- `blinding.py`: message blinding (`m -> m·r^e mod n`) and exponent blinding (`d -> d + k·φ(n)`), the technique OpenSSL uses by default to defeat timing attacks.
 
 ## Measured results
 
@@ -59,4 +59,4 @@ pytest                                   # correctness round-trip test
 
 ## Scope
 
-Educational simulation only — key sizes, sample counts, and the power-trace noise model are tuned for demonstrating the effect clearly, not for reproducing a lab-grade hardware attack. Not intended for use as a production cryptography library.
+Educational simulation only: key sizes, sample counts, and the power-trace noise model are tuned for demonstrating the effect clearly, not for reproducing a lab-grade hardware attack. Not intended for use as a production cryptography library.
